@@ -9,10 +9,10 @@ const User = require('../models/userModel')
 // @access Public
 const registerUser = asyncHandler(async(req, res) => {
 
-    const {name, email, password, phone, dateOfBirth, isAdmin} = req.body
+    const {name, email, password, phone, dateOfBirth, address, isAdmin, job, maritalStatus} = req.body
 
     // Validation
-    if(!name || !email || !password || !phone || !dateOfBirth) {
+    if(!name || !email || !password || !phone || !dateOfBirth || !address || !job || !maritalStatus) {
         res.status(400)
         throw new Error('Please include all fields')
     }
@@ -36,6 +36,9 @@ const registerUser = asyncHandler(async(req, res) => {
         password: hashedPassword,
         phone,
         dateOfBirth,
+        address,
+        job,
+        maritalStatus,
         isAdmin
     })
 
@@ -46,6 +49,9 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             phone: user.phone,
             dateOfBirth: user.dateOfBirth,
+            address: user.address,
+            job: user.job,
+            maritalStatus: user.maritalStatus,
             isAdmin: user.isAdmin,
             token: generateToken(user._id)
         })
@@ -72,6 +78,9 @@ const loginUser = asyncHandler(async(req, res) => {
             email: user.email,
             phone: user.phone,
             dateOfBirth: user.dateOfBirth,
+            address: user.address,
+            job: user.job,
+            maritalStatus: user.maritalStatus,
             isAdmin: user.isAdmin,
             token: generateToken(user._id)
         })

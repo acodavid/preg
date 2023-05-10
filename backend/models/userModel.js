@@ -22,9 +22,20 @@ const userSchema = mongoose.Schema({
         type: Date,
         required: [true, 'Please add a date of birth']
     },
+    address: {
+        type: String,
+        required: [true, 'Please add an address']
+    },
+    job: {
+        type: String,
+        required: [true, 'Please add a job']
+    },
+    maritalStatus: {
+        type: String,
+        required: [true, 'Please add a your status']
+    },
     isAdmin: {
         type: Boolean,
-        required: true,
         default: false
     }
 },
