@@ -20,6 +20,11 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/personal', require('./routes/personalAmnRoutes'))
+app.use('/api/family', require('./routes/familyAmnRoutes'))
+app.use('/api/reproductive', require('./routes/reproductiveAmnRoutes'))
+app.use('/api/notes', require('./routes/notesRoutes'))
+app.use('/api/info', require('./routes/infoPregnantWomanRoutes'))
+app.use('/api/examinations', require('./routes/examinationsRoutes'))
 
 app.use(errorHandler)
 
