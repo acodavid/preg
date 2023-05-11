@@ -5,6 +5,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import PrivateRoute from './components/PrivateRoute';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   return (
@@ -12,7 +14,12 @@ function App() {
       <Router>
         <div className="container">
           <Routes>
-            <Route path='/dashboard' element={<Home />} />
+            <Route path='/dashboard' element={<PrivateRoute />}>
+              <Route path='/dashboard' element={<Home />} />
+            </Route>
+            <Route path='/personal/details/:id' element={<PrivateRoute />}>
+              <Route path='/personal/details/:id' element={<UserProfile />} />
+            </Route>
             <Route path='/' element={<Login />} />
             <Route path='/register' element={<Register />} />
           </Routes>

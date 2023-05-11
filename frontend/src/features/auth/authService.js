@@ -3,6 +3,20 @@ import {toast} from 'react-toastify'
 
 const API_URL = '/api/users/'
 
+//Get all users
+const getUsers = async (token) => {
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + 'all', config)
+
+    return response.data
+}
+
 // Register User
 const register = async (userData) => {
     const response = await axios.post(API_URL, userData)
@@ -28,7 +42,8 @@ const logout = () => localStorage.removeItem('user')
 const authService = {
     register,
     logout,
-    login
+    login,
+    getUsers
 }
 
 export default authService
