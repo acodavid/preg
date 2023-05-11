@@ -86,7 +86,7 @@ const loginUser = asyncHandler(async(req, res) => {
         })
     } else {
         res.status(401)
-        throw new Error('Invalid credentials')
+        throw new Error('Pogresan unos')
     }
 })
 
@@ -96,6 +96,24 @@ const loginUser = asyncHandler(async(req, res) => {
 const getMe = asyncHandler(async(req, res) => {
 
     res.status(200).json(req.user)
+    
+})
+
+// @desc Get all users with isAmin is equal false
+// @route /api/users/all
+// @access Private
+const getAllNonAdminUsers = asyncHandler(async(req, res) => {
+
+    const users = await User.find({isAdmin: false})
+
+    if(users) {
+        res.status(200).json(users)
+    } else {
+        res.status(404)
+        throw new Error('Trenutno ne postoji ni jedan korisnik')
+    }
+
+    
     
 })
 
@@ -109,5 +127,6 @@ const generateToken = (id) => {
 module.exports  = {
     registerUser,
     loginUser,
-    getMe
+    getMe,
+    getAllNonAdminUsers
 }
