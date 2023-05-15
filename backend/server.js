@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const colors = require('colors')
 const dotenv = require('dotenv').config()
 const {errorHandler} = require('./middleware/errorMiddleware')
@@ -25,6 +26,18 @@ app.use('/api/reproductive', require('./routes/reproductiveAmnRoutes'))
 app.use('/api/notes', require('./routes/notesRoutes'))
 app.use('/api/info', require('./routes/infoPregnantWomanRoutes'))
 app.use('/api/examinations', require('./routes/examinationsRoutes'))
+
+// Serve Frontend
+if(process.env.NODE_ENV === 'production') {
+    // set build folder as static
+    app.use(express.static(path.join(__dirname, '../fronted/build')))
+
+    app.get('*', (req, res) => res.sendFile(__dirname, '../', 'frontend', 'build', 'index.html'))
+} else {
+    app.get('/', (req, res) => {
+        res.status(200).json({message: 'Welcome to my app'})
+    })
+}
 
 app.use(errorHandler)
 
