@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "proxy": "http://localhost:5000",
+  "proxy": "https://crazy-elbakyan.138-201-248-252.plesk.page",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
