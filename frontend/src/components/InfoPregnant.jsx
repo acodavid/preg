@@ -8,8 +8,8 @@ import Spinner from './Spinner'
 
 function InfoPregnant({user_id}) {
 
-    const {isLoading, isError, isSucces, message} = useSelector(
-        (state) => state.personal
+    const {isLoading, isError, isSucces, message, infoPreg} = useSelector(
+        (state) => state.info
     )
     
     const [formData, setFormData] = useState({
@@ -18,23 +18,35 @@ function InfoPregnant({user_id}) {
         factors: ''
     })
 
+    const [formDisabled, setFormDisabled] = useState(false)
+
     const { pm, tp, factors} = formData
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
+
+        if(infoPreg) {
+            setFormDisabled(true)
+            setFormData({
+                pm: infoPreg.pm,
+                tp: infoPreg.tp,
+                factors: infoPreg.factors
+            })
+        }
+
         if(isError) {
             toast.error(message)
         }
 
         if(isSucces) {
             dispatch(reset())
-            navigate('/dashboard')
+            // navigate('/dashboard')
         }
 
         dispatch(reset())
-    }, [dispatch, isError, isSucces, navigate, message])
+    }, [dispatch, isError, isSucces, navigate, message, infoPreg, setFormData])
 
     const onChange = (e) => {
         setFormData((prevState) =>({
@@ -43,8 +55,14 @@ function InfoPregnant({user_id}) {
         }))
     }
 
+    const setEditFormState = () => {
+        setFormDisabled(false)
+    }
+
     const onSubmit = (e) => {
         e.preventDefault()
+
+        setFormDisabled(true)
 
         const infoPregnantWoman = formData
         infoPregnantWoman.id = user_id
@@ -64,7 +82,7 @@ function InfoPregnant({user_id}) {
     <div>
         <h1>Osnovni podaci za trudnicu</h1>
 
-        <section className="form">
+        <fieldset disabled={formDisabled} className="form">
         <form onSubmit={onSubmit}>
             <div className='form-group'>
                 <label htmlFor="pm">PM</label>
@@ -78,11 +96,15 @@ function InfoPregnant({user_id}) {
                 <label htmlFor="factors">Factors</label>
                 <input type="text" className='form-control' id='factors' name='factors' value={factors} onChange={onChange} placeholder='Faktori' required/>
             </div>
-            <div className='form-group'>
-                <button className='btn btn-block' type='submit'>Potvrdi</button>
-            </div>
+            {!formDisabled && 
+                    <div className='form-group'>
+                        <button className='btn btn-block' type='submit'>Potvrdi</button>
+                    </div>}
         </form>
-    </section>
+    </fieldset>
+    {formDisabled && <div className='form'>
+                        <button className='btn btn-block' onClick={setEditFormState} type='button'>Izmijeni podatke</button>
+                    </div>}
     </div>
   )
 }

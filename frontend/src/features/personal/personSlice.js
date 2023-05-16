@@ -21,11 +21,33 @@ export const createPersonal = createAsyncThunk('personal/create', async (persona
     }
 })
 
+// Get personal data for user
+export const getPersonalData = createAsyncThunk('personal/getPersonalDataForUser', async (user_id, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token
+        return await personalService.getPersonalDateForUser(user_id, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// remove personal data from global state
+export const removeDataFromState = createAsyncThunk('personal/removeData', async (_, thunkAPI) => {
+    console.log('Removing data from global state')
+})
+
 export const personSlice = createSlice({
     name: 'personal',
     initialState,
     reducers: {
-        reset: (state) => initialState
+        reset: (state) => {
+            state.isLoading = false
+            state.isError = false
+            state.isSucces = false
+            state.message = ''
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -40,6 +62,23 @@ export const personSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+            })
+            .addCase(getPersonalData.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getPersonalData.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSucces = true
+                state.personalAmn = action.payload
+            })
+            .addCase(getPersonalData.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(removeDataFromState.fulfilled, (state) => {
+                state.personalAmn = null
+                
             })
     }
 })

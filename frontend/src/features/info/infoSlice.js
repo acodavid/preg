@@ -10,7 +10,7 @@ const initialState = {
 }
 
 // create new info amn
-export const createInfo = createAsyncThunk('family/create', async (infoData, thunkAPI) => {
+export const createInfo = createAsyncThunk('info/create', async (infoData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token
         return await infoService.createInfo(infoData, token)
@@ -21,11 +21,33 @@ export const createInfo = createAsyncThunk('family/create', async (infoData, thu
     }
 })
 
+// Get info data for user
+export const getInfoData = createAsyncThunk('info/getInfoDataForUser', async (user_id, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token
+        return await infoService.getInfoDataForUser(user_id, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// remove info data from global state
+export const removeInfoDataFromState = createAsyncThunk('info/removeData', async (_, thunkAPI) => {
+    console.log('Removing info data from global state')
+})
+
 export const infoSlice = createSlice({
     name: 'info',
     initialState,
     reducers: {
-        reset: (state) => initialState
+        reset: (state) => {
+            state.isLoading = false
+            state.isError = false
+            state.isSucces = false
+            state.message = ''
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -40,6 +62,23 @@ export const infoSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+            })
+            .addCase(getInfoData.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getInfoData.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSucces = true
+                state.infoPreg = action.payload
+            })
+            .addCase(getInfoData.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(removeInfoDataFromState.fulfilled, (state) => {
+                state.infoPreg = null
+                
             })
     }
 })

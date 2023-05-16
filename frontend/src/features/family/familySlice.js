@@ -21,11 +21,33 @@ export const createFamily = createAsyncThunk('family/create', async (familyData,
     }
 })
 
+// Get personal data for user
+export const getFamilyData = createAsyncThunk('family/getFamilyDataForUser', async (user_id, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token
+        return await familyService.getFamilyDataForUser(user_id, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// remove personal data from global state
+export const removeFamilyDataFromState = createAsyncThunk('family/removeData', async (_, thunkAPI) => {
+    console.log('Removing family data from global state')
+})
+
 export const familySlice = createSlice({
     name: 'family',
     initialState,
     reducers: {
-        reset: (state) => initialState
+        reset: (state) => {
+            state.isLoading = false
+            state.isError = false
+            state.isSucces = false
+            state.message = ''
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -40,6 +62,23 @@ export const familySlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+            })
+            .addCase(getFamilyData.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getFamilyData.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSucces = true
+                state.familyAmn = action.payload
+            })
+            .addCase(getFamilyData.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(removeFamilyDataFromState.fulfilled, (state) => {
+                state.familyAmn = null
+                
             })
     }
 })

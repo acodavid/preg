@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = '/api/reproductive'
+const API_URL = '/api/reproductive/'
 
 const createReproductive = async (reproAmn, token) => {
     const config = {
@@ -14,8 +14,23 @@ const createReproductive = async (reproAmn, token) => {
     return response.data
 }
 
+const getReproductiveDataForUser = async (user_id, token) => {
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + user_id, config)
+
+    return response.data
+
+}
+
 const reproductiveService = {
-    createReproductive
+    createReproductive,
+    getReproductiveDataForUser
 }
 
 export default reproductiveService

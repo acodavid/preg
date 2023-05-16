@@ -4,25 +4,41 @@ import { useSelector, useDispatch } from 'react-redux'
 import {logout, reset, getUsers} from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 import { toast } from 'react-toastify'
+import {format} from 'date-fns'
+import { removeDataFromState } from '../features/personal/personSlice'
+import { removeFamilyDataFromState } from '../features/family/familySlice'
+import { removeReproductiveDataFromState } from '../features/reproductive/reproductiveSlice'
+import { removeNotesDataFromState } from '../features/notes/notesSlice'
+import { removeInfoDataFromState } from '../features/info/infoSlice'
 
 function Home() {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const {user, users, isError, isLoading, isSuccess, message} = useSelector((state) => state.auth)
+  const {user, users, isError, isLoading, message} = useSelector((state) => state.auth)
 
   useEffect(() => {
     if(!user) {
       navigate('/')
     } else {
-      dispatch(getUsers())
+
+      if(user.isAdmin) {
+        dispatch(getUsers())
+        dispatch(removeDataFromState())
+        dispatch(removeFamilyDataFromState())
+        dispatch(removeReproductiveDataFromState())
+        dispatch(removeNotesDataFromState())
+        dispatch(removeInfoDataFromState())
+      } else {
+        navigate(`/personal/details/${user._id}`)
+      }  
     }
 
     if(isError) {
       toast.error(message)
     }
     
-  }, [user, getUsers, dispatch, navigate, isError, message])
+  }, [user, dispatch, navigate, isError, message])
 
   const onLogout = () => {
     dispatch(logout())
@@ -43,19 +59,22 @@ function Home() {
       {users ? (
         <table>
           <thead>
+            <tr>
             <th>Ime</th>
             <th>Email</th>
             <th>Broj telefona</th>
             <th>Datum rodjenja</th>
             <th></th>
+            </tr>
+            
           </thead>
           <tbody>
             {users.map(user => (
-              <tr>
+              <tr key={user._id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.phone}</td>
-                <td>{user.dateOfBirth}</td>
+                <td>{format(new Date(user.dateOfBirth), 'dd.MM.yyyy.')}</td>
                 <td><Link to={`/personal/details/${user._id}`} className='btn btn-block'>Detalji</Link></td>
               </tr>
             ))}

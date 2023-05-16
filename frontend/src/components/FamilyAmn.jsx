@@ -8,9 +8,11 @@ import { createFamily, reset } from '../features/family/familySlice'
 
 function FamilyAmn({user_id}) {
 
-    const {isLoading, isError, isSucces, message} = useSelector(
-        (state) => state.personal
+    const {isLoading, isError, isSucces, message, familyAmn} = useSelector(
+        (state) => state.family
     )
+
+    const [formDisabled, setFormDisabled] = useState(false)
     
     const [formData, setFormData] = useState({
         diabetesMellitus: '',
@@ -28,6 +30,20 @@ function FamilyAmn({user_id}) {
     const navigate = useNavigate()
 
     useEffect(() => {
+
+        if(familyAmn) {
+            setFormDisabled(true)
+            setFormData({
+                diabetesMellitus: familyAmn.diabetesMellitus,
+                congenitalAnomalies: familyAmn.congenitalAnomalies,
+                inheritedAnomalies: familyAmn.inheritedAnomalies,
+                nervousAndMentalDiseases: familyAmn.nervousAndMentalDiseases,
+                multiplePregnancies: familyAmn.multiplePregnancies,
+                chronicSystemicDiseases: familyAmn.chronicSystemicDiseases,
+                other: familyAmn.other
+            })
+        }
+
         if(isError) {
             toast.error(message)
         }
@@ -37,7 +53,7 @@ function FamilyAmn({user_id}) {
         }
 
         dispatch(reset())
-    }, [dispatch, isError, isSucces, navigate, message])
+    }, [dispatch, isError, isSucces, navigate, message, familyAmn, setFormData])
 
     const onChange = (e) => {
         setFormData((prevState) =>({
@@ -49,6 +65,8 @@ function FamilyAmn({user_id}) {
     const onSubmit = (e) => {
         e.preventDefault()
 
+        setFormDisabled(true)
+
         const familyAmn = formData
         familyAmn.id = user_id
 
@@ -56,6 +74,10 @@ function FamilyAmn({user_id}) {
 
         dispatch(createFamily(familyAmn))
 
+    }
+
+    const setEditFormState = () => {
+        setFormDisabled(false)
     }
 
     if(isLoading) {
@@ -67,8 +89,9 @@ function FamilyAmn({user_id}) {
     <div>
         <h1>Porodicna amneza</h1>
 
-        <section className="form">
         <form onSubmit={onSubmit}>
+        <fieldset className="form" disabled={formDisabled}>
+        
             <div className='form-group'>
                 <label htmlFor="diabetesMellitus">Secerna oboljenja</label>
                 <input type="text" className='form-control' id='diabetesMellitus' name='diabetesMellitus' value={diabetesMellitus} onChange={onChange} placeholder='Secerna oboljenja' required/>
@@ -97,11 +120,16 @@ function FamilyAmn({user_id}) {
             <label htmlFor="other">Ostalo</label>
                 <input type="text" className='form-control' id='other' name='other' value={other} onChange={onChange} placeholder='Ostalo' required/>
             </div>
-            <div className='form-group'>
-                <button className='btn btn-block' type='submit'>Potvrdi</button>
-            </div>
-        </form>
-    </section>
+            {!formDisabled && 
+                    <div className='form-group'>
+                        <button className='btn btn-block' type='submit'>Potvrdi</button>
+                    </div>}
+        
+    </fieldset>
+    </form>
+    {formDisabled && <div className='form'>
+                        <button className='btn btn-block' onClick={setEditFormState} type='button'>Izmijeni podatke</button>
+                    </div>}
     </div>
   )
 }
